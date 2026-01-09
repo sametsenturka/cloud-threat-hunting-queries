@@ -1,0 +1,13 @@
+let Baseline =
+    AWSCloudTrail
+    | where TimeGenerated between (ago(90d) .. ago(30d))
+    | summarize BaselineCalls=count() by UserIdentityAccessKeyId;
+
+AWSCloudTrail
+| where TimeGenerated > ago(30d)
+| where isnotempty(UserIdentityAccessKeyId)
+| summarize RecentCalls=count() by UserIdentityAccessKeyId
+| join kind=leftouter Baseline on UserIdentityAccessKeyId
+| where BaselineCalls == 0 and RecentCalls > 10
+
+This pattern is commonly observed after credential leaks, repository scraping, or CI artifact exposure.
