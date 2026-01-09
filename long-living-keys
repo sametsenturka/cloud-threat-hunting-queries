@@ -11,3 +11,20 @@ AWSCloudTrail
 | extend KeyAgeDays = datetime_diff("day", now(), FirstSeen)
 | where KeyAgeDays > 90 and ServiceCount >= 3
 | order by ServiceCount desc, KeyAgeDays desc
+
+
+
+
+AWSCloudTrail
+| where TimeGenerated > ago(120d)
+| where isnotempty(UserIdentityAccessKeyId)
+| where UserIdentityType in ("IAMUser", "AssumedRole")
+| summarize
+    FirstSeen=min(TimeGenerated),
+    LastSeen=max(TimeGenerated),
+    ApiCalls=count()
+    by UserIdentityUserName, UserIdentityAccessKeyId, UserAgent
+| extend KeyAgeDays = datetime_diff("day", now(), FirstSeen)
+| where KeyAgeDays > 90
+| where UserAgent has_any ("aws-cli", "botocore", "sdk", "java", "python")
+| order by KeyAgeDays desc
