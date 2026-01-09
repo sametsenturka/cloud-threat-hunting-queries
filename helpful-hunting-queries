@@ -1,0 +1,13 @@
+SELECT eventTime, sourceIpAddress, userIdentity.userName, errorMessage FROM cloudtrail_logs WHERE eventName = 'ConsoleLogin' AND errorCode IS NOT NULL ORDER BY eventTime DESC LIMIT 50;
+
+SELECT eventTime, userIdentity.userName, requestParameters FROM cloudtrail_logs WHERE eventName = 'CreateAccessKey';
+
+SELECT eventTime, sourceIpAddress, COUNT(*) as count FROM cloudtrail_logs WHERE eventName = 'ListBuckets' GROUP BY sourceIpAddress, eventTime HAVING count > 5;
+
+SELECT eventTime, sourceIpAddress, requestParameters.bucketName, errorCode FROM cloudtrail_logs WHERE eventSource = 's3.amazonaws.com' AND eventName LIKE '%Object' AND errorCode = 'AccessDenied';
+
+SELECT * FROM cloudtrail_logs WHERE eventName IN ('StopLogging', 'DeleteTrail', 'UpdateTrail');
+
+SELECT eventTime, sourceIpAddress FROM cloudtrail_logs WHERE userIdentity.type = 'Root' AND eventName != 'ConsoleLogin';
+
+SELECT eventTime, requestParameters.userName FROM cloudtrail_logs WHERE eventName = 'CreateUser';
