@@ -1,0 +1,13 @@
+AWSCloudTrail
+| where TimeGenerated > ago(90d)
+| where isnotempty(UserIdentityAccessKeyId)
+| where UserIdentityType == "IAMUser"
+| summarize
+    FirstSeen=min(TimeGenerated),
+    LastSeen=max(TimeGenerated),
+    DaysUsed=dcount(format_datetime(TimeGenerated, "yyyy-MM-dd")),
+    TotalEvents=count(),
+    ExampleEvent=any(EventName)
+    by UserIdentityUserName, UserIdentityAccessKeyId
+| where DaysUsed > 90
+| sort by DaysUsed desc
