@@ -1,0 +1,13 @@
+AWSCloudTrail
+| where TimeGenerated > ago(90d)
+| where isnotempty(UserIdentityAccessKeyId)
+| summarize
+    FirstSeen=min(TimeGenerated),
+    LastSeen=max(TimeGenerated),
+    ApiCalls=count(),
+    ServiceCount=dcount(EventSource),
+    Services=make_set(EventSource)
+    by UserIdentityUserName, UserIdentityAccessKeyId
+| extend KeyAgeDays = datetime_diff("day", now(), FirstSeen)
+| where KeyAgeDays > 90 and ServiceCount >= 3
+| order by ServiceCount desc, KeyAgeDays desc
