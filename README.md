@@ -13,11 +13,3 @@ long-living-keys – Identifies API keys that have not been rotated for a long t
 longliving-unusual-location – Finds long-lived credentials used from unusual geographic locations.
 
 reuse-of-old-keys – Detects reuse of previously rotated or disabled access keys.
-
-Usage
-
-Import the queries into your log analytics or SIEM platform (e.g. CloudWatch Logs Insights, Athena, Splunk).
-
-Adjust parameters based on your environment.
-
-Review the results to identify potential credential abuse or misconfigurations.
